@@ -1,0 +1,53 @@
+version: '3.5'
+services:
+
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=kimai
+      - MYSQL_USER=kimai
+      - MYSQL_PASSWORD=kimai
+      - MYSQL_ROOT_PASSWORD=kimai
+    command: --default-storage-engine innodb
+    restart: unless-stopped
+    healthcheck:
+      test: mysqladmin -p$$MYSQL_ROOT_PASSWORD ping -h localhost
+      interval: 20s
+      start_period: 10s
+      timeout: 10s
+      retries: 3
+    networks:
+      default:
+    labels:
+      backups: "true"
+
+  app:
+    image: kimai/kimai2:apache
+    depends_on:
+      - db
+    volumes:
+      - app_data:/opt/kimai/var
+    environment:
+      - ADMINMAIL
+      - ADMINPASS
+      - MAILER_URL
+      - MAILER_FROM
+      - DATABASE_URL=mysql://kimai:kimai@db/kimai
+      - TRUSTED_HOSTS=
+    restart: unless-stopped
+    networks:
+      default:
+      proxy_apps:
+    labels:
+      backups: "true"
+
+volumes:
+  db_data:
+  app_data:
+
+networks:
+  proxy_apps:
+    name: proxy_apps
+    external: true
