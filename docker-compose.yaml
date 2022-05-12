@@ -42,6 +42,9 @@ services:
       proxy_apps:
     labels:
       backups: "true"
+    dns:
+      - "1.1.1.1"
+      - "1.0.0.1"
 
 volumes:
   db_data:
