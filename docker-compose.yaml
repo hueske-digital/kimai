@@ -1,4 +1,4 @@
-version: '3.5'
+version: '3.8'
 services:
 
   db:
@@ -28,12 +28,13 @@ services:
     depends_on:
       - db
     volumes:
-      - app_data:/opt/kimai/var
+      - app_data:/opt/kimai/var/data
     environment:
       - ADMINMAIL
       - ADMINPASS
       - MAILER_URL
       - MAILER_FROM
+      - APP_SECRET
       - DATABASE_URL=mysql://kimai:kimai@db/kimai
       - TRUSTED_HOSTS=
     restart: unless-stopped
@@ -42,9 +43,6 @@ services:
       proxy_apps:
     labels:
       backups: "true"
-    dns:
-      - "1.1.1.1"
-      - "1.0.0.1"
 
 volumes:
   db_data:
